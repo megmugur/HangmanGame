@@ -3,7 +3,7 @@ from PySide2 import QtWidgets, QtGui, QtCore
 import WelcomeTemplate, QuestionTemplate, ResultTemplate
 
 
-class InviteDialog(QtWidgets.QDialog):
+class InviteDialog(QtWidgets.QDialog):           # TODO : Change over to Pep-8 naming convention. And document properly!
     def __init__(self, parent=None):                      # When you use Maya, this parent will be Maya! That's its use.
         super(InviteDialog, self).__init__(parent)
         self.setWindowTitle("Hangman Beta © Meg Mugur 2020")
