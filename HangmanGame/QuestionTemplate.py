@@ -32,7 +32,7 @@ class QuestionClass(QtWidgets.QDialog):
     def init_answer_text_method(self):
         """Creates the boxes for the answer display.
         :return : None.
-        TODO: Avoid hardcoding a limit to the number of boxes."""
+        TODO: Avoid hard-coding a limit to the number of boxes."""
         self.answer_letters_list = []
         for index in range(0, 25):
             index_string = str(index)

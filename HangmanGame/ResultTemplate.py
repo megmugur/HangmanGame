@@ -9,7 +9,7 @@ class ResultClass(QtWidgets.QDialog):
         :param type: parent class.
         :return : None. """
         super(ResultClass, self).__init__(parent)
-        self.result = "a"
+        self.result = ""
         self.result_layout = QtWidgets.QVBoxLayout()
         self.result_label = QtWidgets.QLabel()
 

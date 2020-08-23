@@ -43,7 +43,7 @@ class InviteDialog(QtWidgets.QDialog):
 
     def init_question_page_method(self):
         """Initializes the question page by creating an object of the QuestionClass type.
-        Signal-slot connections for all buttons are made during initialization
+        Signal-slot connections for all buttons are made during initialization.
         Questions are loaded into a list.
         :return: None.
         TODO: accommodate spaces, i.e., multiple words
@@ -81,7 +81,8 @@ class InviteDialog(QtWidgets.QDialog):
         self.game_stack_widget.setCurrentWidget(self.question_widget)
 
     def init_next_question_method(self):
-        """Deletes the old question widget, creates a new one, adds to stack, and sets as current page.
+        """Initialization and basic setting up of the next Question page.
+        Deletes the old question widget, creates a new one, adds to stack, and sets as current page.
         :return : None."""
         self.question_widget.deleteLater()
         self.question_widget = QtWidgets.QWidget()
@@ -115,7 +116,7 @@ class InviteDialog(QtWidgets.QDialog):
     def find_char_in_name_method(self):
         """Checks where the selected alphabet exists in the name of the movie.
         When the alphabet is found, increments correct_guess_count.
-        Once current_guess_count matched the length of the movie name, goes to next question.
+        Once current_guess_count matches the length of the movie name, goes to next question.
         If questions list is exhausted, proceeds to ending the game.
         :return : None."""
         for pos, char in enumerate(self.question):  # for every char in the question, check if
@@ -145,7 +146,7 @@ class InviteDialog(QtWidgets.QDialog):
             self.question_object.alphabet_button_list[index].clicked.connect(self.check_guess_method)
 
     def result_page_method(self):
-        """Sets the result message label and displays the result page
+        """Sets the result message label, and displays the result page.
         :return : None."""
         self.result_object.result = self.result
         self.result_object.result_method()
