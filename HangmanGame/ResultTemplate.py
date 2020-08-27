@@ -6,17 +6,16 @@ class ResultClass(QtWidgets.QDialog):
     def __init__(self, parent=None):
         """Sets up the widgets in the Result template.
         :param: parent :  provides ability to connect to external applications like Maya.
-        :param type: parent class.
-        :return : None. """
+        :param type: QWidget."""
         super(ResultClass, self).__init__(parent)
         self.result = ""
         self.result_layout = QtWidgets.QVBoxLayout()
         self.result_label = QtWidgets.QLabel()
 
-    def result_method(self):
-        """Displays a final message on the result page.
-        :return: None.
-        """
+    def setup_result_layout(self):
+        """Sets up layout to display a final message on the result page."""
+        if self.result == "empty":
+            self.result_label.setText("All questions are away in meetings. Come back later.")
         if self.result == "success":
             self.result_label.setText("Well played. But damn, stop watching so many movies. Do some work.")
         elif self.result == "failure":
