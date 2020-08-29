@@ -4,20 +4,18 @@ import WelcomeTemplate, QuestionTemplate, ResultTemplate
 import json
 
 class InviteDialog(QtWidgets.QDialog):
-    """ Dialog for the game, enables the logical functioning """
+    """ Sets up the dialog widget for the game, includes all the game logic """
 
     def __init__(self, parent=None):
         """ Initializes the dialog by creating the necessary UI framework.
         :param parent: provides ability to connect to external applications like Maya.
-        :param type: QWidget.
+        :type: QWidget.
         """
         super(InviteDialog, self).__init__(parent)
         self.setWindowTitle("Hangman Beta © Meg Mugur 2020")
         self.setStyleSheet("background-color: #D1D1D1")
 
-        self.game_stack_layout = QtWidgets.QVBoxLayout()
         self.create_game_stack_widget()
-        self.game_stack_layout.addWidget(self.game_stack_widget)
         self.setLayout(self.game_stack_layout)
 
         self.initialize_welcome_page()
@@ -27,7 +25,10 @@ class InviteDialog(QtWidgets.QDialog):
 
     def create_game_stack_widget(self):
         """Creates a stack of widgets for the different pages to be displayed."""
+        self.game_stack_layout = QtWidgets.QVBoxLayout()
         self.game_stack_widget = QtWidgets.QStackedWidget()
+        self.game_stack_layout.addWidget(self.game_stack_widget)
+
         self.question_page_widget = QtWidgets.QWidget()
         self.welcome_page_widget = QtWidgets.QWidget()
         self.result_page_widget = QtWidgets.QWidget()
@@ -41,7 +42,7 @@ class InviteDialog(QtWidgets.QDialog):
     def stack_design(self):
         """Basic design settings of the stack."""
         self.setFixedWidth(800)
-        self.setFixedHeight(400)
+        self.setFixedHeight(600)
 
     def initialize_welcome_page(self):
         """Basic setting up of the Welcome page:
@@ -64,9 +65,10 @@ class InviteDialog(QtWidgets.QDialog):
         self.index_of_clicked_button = -1
         for index, button in enumerate(self.question_object.alphabet_button_list):
             self.question_object.alphabet_button_list[index].clicked.connect(self.examine_guessed_alphabet)
+        self.allowed_attempts = 9
         self.correct_guess_count = 0
         self.question_index = 0
-
+        self.image_path = ""
         self.questions_list = []
         database_file = open("Database/MoviesDatabase.json")
         try:
@@ -93,12 +95,14 @@ class InviteDialog(QtWidgets.QDialog):
         self.setup_clue_image()
 
     def setup_clue_image(self):
-        print(self.questions_dict[self.question])
-        self.question_object.image_label.setPixmap("Images/"
-                                                   + self.questions_dict[self.question])
+        self.image_path = "Images/" + self.question.replace(" ", "") + "/"\
+                          + self.questions_dict[self.question][:-4].replace(" ", "") + "_"\
+                          + str(self.allowed_attempts - self.question_object.health_loss)\
+                          + self.questions_dict[self.question][-4:]
+        self.question_object.image_label.setPixmap(self.image_path)
 
     def examine_guessed_alphabet(self):
-        """Checks if the alphabet clicked on, exists in movie name.
+        """Checks if the alphabet clicked on, exists in movie   name.
         If it exists, fills out the corresponding boxes with that letter.
         If it exists, and the entire movie name has been filled, goes to next question.
         If it does not exist, reduces health.
@@ -107,13 +111,14 @@ class InviteDialog(QtWidgets.QDialog):
         TODO: When game ends, ask to start over.
         TODO: When movie has been guessed, display "correct", and display a "next" button."""
         self.index_of_clicked_button = self.question_object.alphabet_button_list.index(self.sender())
-        self.question_object.alphabet_button_list[self.index_of_clicked_button].setStyleSheet("text-decoration: line-through")
-        self.question_object.alphabet_button_list[self.index_of_clicked_button].setEnabled(False)
+        self.clicked_button = self.question_object.alphabet_button_list[self.index_of_clicked_button]
+        self.clicked_button.setEnabled(False)
+        self.clicked_button.setStyleSheet("border : 0")
         if self.question_object.alphabet_list[self.index_of_clicked_button].upper() in self.question.upper():
             self.find_alphabet_position()
-        elif self.question_object.health_loss < 12:
-            self.question_object.health_bars_list[self.question_object.health_loss].setStyleSheet("background-color : None")
+        elif self.question_object.health_loss < self.allowed_attempts:
             self.question_object.health_loss += 1
+            self.setup_clue_image()
         else:
             self.result = "failure"
             self.setup_result_page()
@@ -144,6 +149,7 @@ class InviteDialog(QtWidgets.QDialog):
         self.game_stack_widget.addWidget(self.question_page_widget)
         self.question = self.questions_list[self.question_index]
         self.question_object = QuestionTemplate.QuestionClass()
+        # self.question_object.initialize_answer_boxes()
         self.question_object.setup_question_layout(self.question)
         self.question_page_widget.setLayout(self.question_object.question_layout)
         self.game_stack_widget.setCurrentWidget(self.question_page_widget)
