@@ -4,7 +4,7 @@ import string
 
 
 class QuestionClass(QtWidgets.QDialog):
-    def __init__(self, parent=None):
+    def __init__(self, question, parent=None):
         """Sets up the widgets in the Question template.
         :param: parent :  provides ability to connect to external applications like Maya.
         :param type: QWidget."""
@@ -20,22 +20,20 @@ class QuestionClass(QtWidgets.QDialog):
         self.answer_boxes_layout = QtWidgets.QHBoxLayout()
         self.alphabet_widget = QtWidgets.QWidget()
         self.alphabet_layout = QtWidgets.QHBoxLayout()
-        self.question = ""
+        self.question = question
         self.health_loss = 0
-
         self.initialize_answer_boxes()
         self.initialize_alphabet_buttons()
 
     def initialize_answer_boxes(self):
-        """Creates the boxes for the answer display.
-        TODO: Avoid hard-coding a limit to the number of boxes."""
+        """Creates the boxes for the answer display."""
         self.answer_letters_list = []
-        for index in range(0, 25):
+        for index in range(len(self.question)):
             index_string = str(index)
-            exec("self.ans%sTxt = QtWidgets.QLabel()" % index_string)  # execute list of commands of type:
-            # [ self.ans1Txt = QtWidgets.QLabel() ]
-            exec("self.answer_letters_list.append(self.ans%sTxt)" % index_string)  # create "answer_letters_list", a list of text boxes
-            # for movie name letters.
+            # executes command of type: [ self.ans1Txt = QtWidgets.QLabel() ]
+            exec("self.ans%sTxt = QtWidgets.QLabel()" % index_string)
+            # appends answer letters list with letter.
+            exec("self.answer_letters_list.append(self.ans%sTxt)" % index_string)
 
     def initialize_alphabet_buttons(self):
         """Creates the alphabet buttons."""
@@ -46,7 +44,9 @@ class QuestionClass(QtWidgets.QDialog):
             exec("self.alphabet_button_list.append(self.alph%sBtn)" % button)
 
     def setup_question_layout(self, current_question):
-        """Sets up the layout for the Question page."""
+        """Sets up the layout for the Question page.
+        :param current_question : current question, movie name.
+        :type current_question : str"""
         self.question = current_question
         self.setup_image_layout()
         self.setup_answer_boxes()
@@ -66,7 +66,6 @@ class QuestionClass(QtWidgets.QDialog):
             if self.question[box] != " ":
                 self.answer_letters_list[box].setStyleSheet("background-color : #FFF3F3")
             self.answer_letters_list[box].setFixedSize(30, 30)
-            # self.answer_letters_list[box].setTextSize(30, 30)
             self.answer_letters_list[box].setAlignment(QtCore.Qt.AlignCenter)
 
     def setup_alphabet_buttons(self):
@@ -79,8 +78,7 @@ class QuestionClass(QtWidgets.QDialog):
             self.alphabet_button_list[btn].setStyleSheet("background-color : #FFF3F3")
 
     def setup_image_layout(self):
-        """Sets up the image_widget.
-        TODO: Change images """
+        """Sets up the image_widget."""
         self.image_widget.setLayout(self.image_layout)
         self.image_layout.addWidget(self.image_label)
         self.image_layout.setAlignment(QtCore.Qt.AlignCenter)

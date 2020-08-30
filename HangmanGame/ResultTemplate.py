@@ -11,13 +11,15 @@ class ResultClass(QtWidgets.QDialog):
         self.result = ""
         self.result_layout = QtWidgets.QVBoxLayout()
         self.result_label = QtWidgets.QLabel()
+        self.result_font = QtGui.QFont()
 
     def setup_result_layout(self):
         """Sets up layout to display a final message on the result page."""
-        if self.result == "empty":
+        self.result_label.setFont(self.result_font)
+        if self.result == "error":
             self.result_label.setText("All questions are away in meetings. Come back later.")
         if self.result == "success":
-            self.result_label.setText("Well played. But damn, stop watching so many movies. Do some work.")
+            self.result_label.setText("Well played! But damn, stop watching so many movies. Do some work.")
         elif self.result == "failure":
             self.result_label.setText("All those wrong guesses! SMH. Start over.")
         self.result_label.setAlignment(QtCore.Qt.AlignCenter)
