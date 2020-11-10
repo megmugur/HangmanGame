@@ -1,11 +1,14 @@
+#-*- coding: utf-8 -*-
+
 import os
+
 import sys
 import json
 
 import QuestionTemplate
 import ResultTemplate
 import WelcomeTemplate
-from PySide2 import QtWidgets, QtGui, QtCore
+from PySide2 import QtWidgets, QtGui
 from functools import partial
 
 
