@@ -6,7 +6,7 @@ class WelcomeClass(QtWidgets.QDialog):
     def __init__(self, parent=None):
         """Sets up the widgets in the Welcome template.
         :param: parent :  provides ability to connect to external applications like Maya.
-        :param type: QWidget."""
+        :type parent: QWidget."""
         super(WelcomeClass, self).__init__(parent)
         self.welcome_layout = QtWidgets.QVBoxLayout()
         self.welcome_label = QtWidgets.QLabel("Welcome to Hangman! Are you ready?")
