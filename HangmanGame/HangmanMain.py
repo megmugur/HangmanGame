@@ -1,21 +1,23 @@
 #-*- coding: utf-8 -*-
 
 import os
-
 import sys
 import json
+from PySide2 import QtWidgets, QtGui
+from functools import partial
 
 import QuestionTemplate
 import ResultTemplate
 import WelcomeTemplate
-from PySide2 import QtWidgets, QtGui
-from functools import partial
 
 
 class HangmanDialog(QtWidgets.QDialog):
     """ Sets up the dialog widget for the game, includes all the game logic.
         TODO: When game ends, ask to start over.
-        TODO: When movie has been guessed, display "correct", and display a "next" button."""
+        TODO: Accommodate movie names that contain numbers and special characters.
+        TODO: When movie has been guessed, display "correct", and display a "next" button.
+        TODO: Get rid of the exec commands used to create question page buttons dynamically,
+              and think of an alternative way to do it. """
 
     def __init__(self, parent=None):
         """ Initializes the dialog by creating the necessary UI framework, and setting the basic design/style.
@@ -31,31 +33,52 @@ class HangmanDialog(QtWidgets.QDialog):
         self.text_font = QtGui.QFont("Verdana", 10)
 
         self.game_stack_layout = QtWidgets.QVBoxLayout()
+        self.game_stack_widget = QtWidgets.QStackedWidget()
+        self.question_page_widget = QtWidgets.QWidget()
+        self.welcome_page_widget = QtWidgets.QWidget()
+        self.result_page_widget = QtWidgets.QWidget()
+
         self.create_game_stack_widget()
-        self.game_stack_layout.addWidget(self.game_stack_widget)
+
         self.setLayout(self.game_stack_layout)
 
-        self.database_error = False
+        # Initialize welcome page
+        self.welcome_object = WelcomeTemplate.WelcomeClass()
 
-        self.initialize_completed = False
+        # Initialize question page
+        self.index_of_clicked_button = -1
+        self.ALLOWED_ATTEMPTS = 9                                           # hard-coding
+        self.directory_path = "Database/MoviesDatabase.json"                # hard-coding
+        self.correct_guess_count = 0
+        self.question_index = 0
+        self.image_path = ""
+        self.questions_list = []
+        self.questions_dict = {}
+        self.question = None
+        self.question_object = None
+        self.clicked_button = None
+        self.result = ""
+
+        # Initialize result page
+        self.result_object = None
+
         self.initialize_welcome_page()
+        self.initialize_completed = False
         self.initialize_question_page()
-        self.initialize_result_page()
         self.initialize_completed = True
 
+        self.initialize_result_page()
+
+        self.database_error = False
         if not self.database_error:
             self.setup_welcome_page()
         else:
             self.setup_result_page()
 
+        self.game_stack_layout.addWidget(self.game_stack_widget)
+
     def create_game_stack_widget(self):
         """Creates a stack of widgets for the pages of the game: Welcome page, Question page, Result page."""
-        self.game_stack_widget = QtWidgets.QStackedWidget()
-
-        self.question_page_widget = QtWidgets.QWidget()
-        self.welcome_page_widget = QtWidgets.QWidget()
-        self.result_page_widget = QtWidgets.QWidget()
-
         self.game_stack_widget.addWidget(self.welcome_page_widget)
         self.game_stack_widget.addWidget(self.question_page_widget)
         self.game_stack_widget.addWidget(self.result_page_widget)
@@ -69,7 +92,6 @@ class HangmanDialog(QtWidgets.QDialog):
 
     def initialize_welcome_page(self):
         """ Creates an object of WelcomeClass. Sets uniform style. Makes signal-slot connection."""
-        self.welcome_object = WelcomeTemplate.WelcomeClass()
         self.welcome_object.welcome_font = self.text_font
         self.welcome_object.setup_welcome_layout()
         self.welcome_object.enter_button.pressed.connect(self.setup_question_page)
@@ -86,19 +108,10 @@ class HangmanDialog(QtWidgets.QDialog):
         Sends button name to the slot using Partial.
         :return : None"""
 
-        self.index_of_clicked_button = -1
-        self.ALLOWED_ATTEMPTS = 9                                           # hard-coding alert
-        self.directory_path = "Database/MoviesDatabase.json"                # hard-coding alert
-        self.correct_guess_count = 0
-        self.question_index = 0
-        self.image_path = ""
-        self.questions_list = []
-
-        if not os.path.isfile(self.directory_path) or not os.access(self.directory_path, os.R_OK) :
+        if not os.path.isfile(self.directory_path) or not os.access(self.directory_path, os.R_OK):
             self.database_error = True
             print("Error: Directory not found or not readable")
             return
-
         database_file = open(self.directory_path)
         try:                                                    # case: data loading successful.
             self.questions_dict = json.load(database_file)
@@ -122,9 +135,8 @@ class HangmanDialog(QtWidgets.QDialog):
     def setup_question_page(self):
         """Basic setting up of the Question page."""
         # While setting up signal-slot connection in welcome page initialization, no need to setup questions page.
-        if self.initialize_completed == False:
+        if not self.initialize_completed:
             return
-
         self.question = self.questions_list[self.question_index]
         self.question_object.setup_question_layout(self.question)
         self.question_page_widget.setLayout(self.question_object.question_layout)

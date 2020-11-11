@@ -5,8 +5,8 @@ from PySide2 import QtWidgets, QtCore, QtGui
 class ResultClass(QtWidgets.QDialog):
     def __init__(self, parent=None):
         """Sets up the widgets in the Result template.
-        :param: parent :  provides ability to connect to external applications like Maya.
-        :param type: QWidget."""
+        :param parent :  provides ability to connect to external applications like Maya.
+        :type parent: QWidget."""
         super(ResultClass, self).__init__(parent)
         self.result = ""
         self.result_layout = QtWidgets.QVBoxLayout()

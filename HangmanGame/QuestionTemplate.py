@@ -1,13 +1,13 @@
 import sys
-from PySide2 import QtWidgets, QtCore, QtGui
+from PySide2 import QtWidgets, QtCore
 import string
 
 
-class QuestionClass(QtWidgets.QDialog):
+class QuestionClass(QtWidgets.QWidget):
     def __init__(self, question, parent=None):
         """Sets up the widgets in the Question template.
-        :param: parent :  provides ability to connect to external applications like Maya.
-        :param type: QWidget."""
+        :param parent :  provides ability to connect to external applications like Maya.
+        :type parent: QWidget."""
         super(QuestionClass, self).__init__(parent)
         self.question_layout = QtWidgets.QHBoxLayout()
         self.layout = QtWidgets.QVBoxLayout()
@@ -22,12 +22,15 @@ class QuestionClass(QtWidgets.QDialog):
         self.alphabet_layout = QtWidgets.QHBoxLayout()
         self.question = question
         self.health_loss = 0
+        self.answer_letters_list = []
+        self.alphabet_list = []
+        self.alphabet_button_list = []
+
         self.initialize_answer_boxes()
         self.initialize_alphabet_buttons()
 
     def initialize_answer_boxes(self):
         """Creates the boxes for the answer display."""
-        self.answer_letters_list = []
         for index in range(len(self.question)):
             index_string = str(index)
             # executes command of type: [ self.ans1Txt = QtWidgets.QLabel() ]
@@ -38,7 +41,7 @@ class QuestionClass(QtWidgets.QDialog):
     def initialize_alphabet_buttons(self):
         """Creates the alphabet buttons."""
         self.alphabet_list = [char for char in string.ascii_uppercase]
-        self.alphabet_button_list = []
+
         for button in self.alphabet_list:
             exec("self.alph%sBtn = QtWidgets.QPushButton('%s')" % (button, button))
             exec("self.alphabet_button_list.append(self.alph%sBtn)" % button)
