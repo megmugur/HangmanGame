@@ -22,9 +22,9 @@ class QuestionClass(QtWidgets.QWidget):
         self.alphabet_layout = QtWidgets.QHBoxLayout()
         self.question = question
         self.health_loss = 0
-        self.answer_letters_list = []
         self.alphabet_list = []
-        self.alphabet_button_list = []
+        self.buttons_dict = {}
+        self.labels_dict = {}
 
         self.initialize_answer_boxes()
         self.initialize_alphabet_buttons()
@@ -32,24 +32,20 @@ class QuestionClass(QtWidgets.QWidget):
     def initialize_answer_boxes(self):
         """Creates the boxes for the answer display."""
         for index in range(len(self.question)):
-            index_string = str(index)
-            # executes command of type: [ self.ans1Txt = QtWidgets.QLabel() ]
-            exec("self.ans%sTxt = QtWidgets.QLabel()" % index_string)
-            # appends answer letters list with letter.
-            exec("self.answer_letters_list.append(self.ans%sTxt)" % index_string)
+            label = QtWidgets.QLabel()
+            self.labels_dict[index] = label
 
     def initialize_alphabet_buttons(self):
         """Creates the alphabet buttons."""
         self.alphabet_list = [char for char in string.ascii_uppercase]
 
-        for button in self.alphabet_list:
-            exec("self.alph%sBtn = QtWidgets.QPushButton('%s')" % (button, button))
-            exec("self.alphabet_button_list.append(self.alph%sBtn)" % button)
+        for char in self.alphabet_list:
+            self.buttons_dict[char] = QtWidgets.QPushButton(char)
 
     def setup_question_layout(self, current_question):
         """Sets up the layout for the Question page.
         :param current_question : current question, movie name.
-        :type current_question : str"""
+        :type current_question : str """
         self.question = current_question
         self.setup_image_layout()
         self.setup_answer_boxes()
@@ -65,20 +61,21 @@ class QuestionClass(QtWidgets.QWidget):
         self.answer_boxes_widget.setLayout(self.answer_boxes_layout)
         self.answer_boxes_layout.setAlignment(QtCore.Qt.AlignCenter)
         for box in range(len(self.question)):
-            self.answer_boxes_layout.addWidget(self.answer_letters_list[box])
+            self.answer_boxes_layout.addWidget(self.labels_dict[box])
             if self.question[box] != " ":
-                self.answer_letters_list[box].setStyleSheet("background-color : #FFF3F3")
-            self.answer_letters_list[box].setFixedSize(30, 30)
-            self.answer_letters_list[box].setAlignment(QtCore.Qt.AlignCenter)
+                self.labels_dict[box].setStyleSheet("background-color : #FFF3F3")
+            self.labels_dict[box].setFixedSize(30, 30)
+            self.labels_dict[box].setAlignment(QtCore.Qt.AlignCenter)
 
     def setup_alphabet_buttons(self):
         """Sets up the alphabet_widget."""
         self.alphabet_widget.setLayout(self.alphabet_layout)
-        for btn in range(len(self.alphabet_button_list)):
-            self.alphabet_button_list[btn].setMaximumWidth(20)
-            self.alphabet_layout.addWidget(self.alphabet_button_list[btn])
-            self.alphabet_button_list[btn].setFocusPolicy(QtCore.Qt.NoFocus)
-            self.alphabet_button_list[btn].setStyleSheet("background-color : #FFF3F3")
+
+        for btn in self.buttons_dict.keys():
+            self.buttons_dict[btn].setMaximumWidth(20)
+            self.alphabet_layout.addWidget(self.buttons_dict[btn])
+            self.buttons_dict[btn].setFocusPolicy(QtCore.Qt.NoFocus)
+            self.buttons_dict[btn].setStyleSheet("background-color : #FFF3F3")
 
     def setup_image_layout(self):
         """Sets up the image_widget."""

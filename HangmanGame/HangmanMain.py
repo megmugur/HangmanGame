@@ -128,9 +128,9 @@ class HangmanDialog(QtWidgets.QDialog):
 
         self.question = self.questions_list[0]
         self.question_object = QuestionTemplate.QuestionClass(self.question)
-        for index, button in enumerate(self.question_object.alphabet_button_list):
-            self.question_object.alphabet_button_list[index].clicked.connect(
-                partial(self.examine_guessed_alphabet, button))
+        for char in self.question_object.buttons_dict.keys():
+            self.question_object.buttons_dict[char].clicked.connect(
+                partial(self.examine_guessed_alphabet, self.question_object.buttons_dict[char]))
 
     def setup_question_page(self):
         """Basic setting up of the Question page."""
@@ -159,13 +159,12 @@ class HangmanDialog(QtWidgets.QDialog):
         If it does not exist, and health is already zero, ends the game.
         :param clicked_button : the button which calls this method, when clicked on.
         :type clicked_button : QPushButton"""
-
-        self.index_of_clicked_button = self.question_object.alphabet_button_list.index(clicked_button)
+        guessed_char = clicked_button.text()
         self.clicked_button = clicked_button
         self.clicked_button.setEnabled(False)
         self.clicked_button.setStyleSheet("border : 0")
-        if self.question_object.alphabet_list[self.index_of_clicked_button].upper() in self.question.upper():
-            self.find_alphabet_position()
+        if guessed_char.upper() in self.question.upper():
+            self.find_alphabet_position(guessed_char)
         elif self.question_object.health_loss < self.ALLOWED_ATTEMPTS:
             self.question_object.health_loss += 1
             self.setup_clue_image()
@@ -173,16 +172,19 @@ class HangmanDialog(QtWidgets.QDialog):
             self.result = "failure"
             self.setup_result_page()
 
-    def find_alphabet_position(self):
+    def find_alphabet_position(self, guessed_char):
         """Looks for the position of the selected alphabet in the movie name.
         Each time the alphabet is found, increments correct_guess_count.
         Once the entire movie name has been guessed correctly, goes to next question.
-        If questions list is exhausted, proceeds to result page."""
+        If questions list is exhausted, proceeds to result page.
+        :param guessed_char: alphabet that the player guesses
+        :type guessed_char: str
+        """
         for pos, char in enumerate(self.question):
-            if self.question_object.alphabet_list[self.index_of_clicked_button].upper() != char.upper():
+            if guessed_char.upper() != char.upper():
                 continue
-            self.question_object.answer_letters_list[pos].setText(
-                self.question_object.alphabet_list[self.index_of_clicked_button].upper())
+            self.question_object.labels_dict[pos].setText(
+                guessed_char.upper())
             self.correct_guess_count += 1
             if self.correct_guess_count != len(self.question) - self.question.count(" "):
                 continue
@@ -211,8 +213,8 @@ class HangmanDialog(QtWidgets.QDialog):
         self.index_of_clicked_button = -1
         self.correct_guess_count = 0
         self.initialize_next_question_page()
-        for index, button in enumerate(self.question_object.alphabet_button_list):
-            self.question_object.alphabet_button_list[index].clicked.connect(
+        for button in self.question_object.buttons_dict.values():
+            button.clicked.connect(
                 partial(self.examine_guessed_alphabet, button))
         self.setup_clue_image()
 
