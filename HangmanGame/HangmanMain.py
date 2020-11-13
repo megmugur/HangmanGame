@@ -15,9 +15,7 @@ class HangmanDialog(QtWidgets.QDialog):
     """ Sets up the dialog widget for the game, includes all the game logic.
         TODO: When game ends, ask to start over.
         TODO: Accommodate movie names that contain numbers and special characters.
-        TODO: When movie has been guessed, display "correct", and display a "next" button.
-        TODO: Get rid of the exec commands used to create question page buttons dynamically,
-              and think of an alternative way to do it. """
+        TODO: When movie has been guessed, display "correct", and display a "next" button. """
 
     def __init__(self, parent=None):
         """ Initializes the dialog by creating the necessary UI framework, and setting the basic design/style.
